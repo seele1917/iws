@@ -109,10 +109,15 @@ export class LAppDelegate {
    * 解放する。
    */
   public release(): void {
-    this._textureManager.release();
+    if (this._textureManager != null){
+      this._textureManager.release();
+    }
+
     this._textureManager = null;
 
-    this._view.release();
+    if (this._view != null){
+      this._view.release();
+    }
     this._view = null;
 
     // リソースを解放

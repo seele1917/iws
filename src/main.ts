@@ -14,27 +14,32 @@ let roomName = null;
 let myName = null;
 let peer = null;
 let room = null;
+let audioContext = null;
+let audioSource = null;
 let avator = null;
 const dataNum = 100;
 const allChart = {};
 let lastSpeakTime = null;
 // ブラウザロード時の処理
 $(async () => {
-    const API_KEY = ''
+    const API_KEY = '7b6a668d-c2e9-4f78-8a25-c4ad99458d99'
     initModal()
     initFaceApi()
     await initPeer(API_KEY);
 
     avator = initLive2d()
-
     lipSync()
 
     appendRemoteTemplate("me")
     initChart("me")
 });
 
-// ブラウザロード後の処理
-window.onbeforeunload = (): void => LAppDelegate.releaseInstance();
+// ブラウザ終了時の処理
+window.onbeforeunload = () => {
+    audioSource.disconnect();
+    audioContext.close();
+    // LAppDelegate.getInstance().release();
+}
 
 function initModal() {
     // モーダルの起動
@@ -196,12 +201,12 @@ function speechText(kind) {
 
 // audioタグの音量レベルを取得
 function getAnalyser($audio) {
-    const audioContext =  new AudioContext()
+    audioContext =  new AudioContext()
     audioContext.createBufferSource().start(0);
     const analyser = audioContext.createAnalyser()
-    const source = audioContext.createMediaElementSource($audio);
-    source.connect(audioContext.destination)
-    source.connect(analyser)
+    audioSource = audioContext.createMediaElementSource($audio);
+    audioSource.connect(audioContext.destination)
+    audioSource.connect(analyser)
     return analyser
 }
 
