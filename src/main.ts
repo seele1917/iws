@@ -26,7 +26,8 @@ $(async () => {
     await initPeer(API_KEY);
 
     avator = initLive2d()
-    // lipSync()
+
+    lipSync()
 
     appendRemoteTemplate("me")
     initChart("me")
