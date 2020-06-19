@@ -18,6 +18,10 @@ let avator = null;
 const dataNum = 100;
 const allChart = {};
 let lastSpeakTime = null;
+
+// 直前の感情
+// const exAveEmotion = {emotion: null, score: 0}
+
 // ブラウザロード時の処理
 $(async () => {
     const API_KEY = ''
@@ -64,7 +68,7 @@ async function initFaceApi() {
         console.error('mediaDevice.getUserMedia() error:', error);
         return;
     });
-    
+
     $video.play().then(async () => {
         await faceapi.nets.tinyFaceDetector.load('Resources/Weights')
         await faceapi.loadFaceExpressionModel('Resources/Weights')
@@ -117,7 +121,7 @@ function initRoom() {
 
     room.on('peerJoin', peerId => {
         console.log(`=== ${peerId} joined ===`)
-        const dataConnection = peer.connect(peerId, {serialization: "json"});              
+        const dataConnection = peer.connect(peerId, {serialization: "json"});
         dataConnection.on('data', data => {
             if (data == "null"){
                 data = null
@@ -175,22 +179,71 @@ function initLive2d() {
     return avator;
 }
 
-// 0: 通常，笑顔のまま, 1: 0+手を後ろ, 2: うなずき＋悩んでいる, 3: 2と一緒, 4: 手をしたに広げる（心配な感じ）, 5,6: 手を右へ左へ（笑顔）, 7:お辞儀
-// 8: おじぎ, 9:びっくり＋顔照れ, 10:うなずき＋心配そう, 11:手を挙げて横にふる（違いますよー）, 12:手をしたに広げる（心配）, 13: ほぼ12, 14: 笑顔で腕組
-// 15:手を顔に持っていきうっとり表情, 16: 赤面（これ使わねーわ）, 17:赤面で笑顔, 18:赤面＋もじもじ, 19: 悩んでいる（考える人）, 20: 心ぴょんぴょん, 21: 笑顔で後ろ腕
-// 22: 21+顔照れなし, 23:怒ってすねる, 24:驚きレベル１, 25: 驚きレベル2
+// 0: 通常，笑顔のまま,
+// 1: 0+手を後ろ,
+// 2: うなずき＋悩んでいる,
+// 3: 2と一緒,
+// 4: 手をしたに広げる（心配な感じ）,
+// 5,6: 手を右へ左へ（笑顔）,
+// 7:お辞儀
+// 8: おじぎ,
+// 9:びっくり＋顔照れ,
+// 10:うなずき＋心配そう,
+// 11:手を挙げて横にふる（違いますよー）,
+// 12:手をしたに広げる（心配）,
+// 13: ほぼ12,
+// 14: 笑顔で腕組
+// 15:手を顔に持っていきうっとり表情,
+// 16: 赤面（これ使わねーわ）,
+// 17:赤面で笑顔,
+// 18:赤面＋もじもじ,
+// 19: 悩んでいる（考える人）,
+// 20: 心ぴょんぴょん,
+// 21: 笑顔で後ろ腕
+// 22: 21+顔照れなし,
+// 23:怒ってすねる,
+// 24:驚きレベル１,
+// 25: 驚きレベル2
 // モーションを再生(no: 種類)
-function startMotion(no){
+function getRandomInt(max){
+    return Math.floor(Math.random()*Math.floor(max));
+}
+const moveList = {
+    "happy": [1,5,6,14,16,17,20,21,22],
+    "daijoubu": [2, 4, 10, 12, 18, 19],
+}
+function startMotion(kind){
+    let no: number
+
+    if (kind == "happy" || kind == "happy2"){
+        const animation = moveList["happy"]
+        no = animation[getRandomInt(animation.length-1)]
+    } else if(kind == "daijoubu" || kind == "hitoride" || kind == "komatta" || kind == "nemui" || kind == "sorosoro"){
+        const animation = moveList["daijoubu"]
+        no = animation[getRandomInt(animation.length-1)]
+    } else if(kind == "fight" || kind == "YesWeCan" || kind == "TakeItEasy" || kind == "ochituite"){
+        const animation = moveList["happy"]
+        no = animation[getRandomInt(animation.length-1)]
+    } else if(kind == "neutral"){
+        const animation = moveList["daijoubu"]
+        no = animation[getRandomInt(animation.length-1)]
+    } else {
+        const animation = moveList["happy"]
+        no = animation[getRandomInt(animation.length-1)]
+    }
+    console.log(no)
     avator.startMotion("All", no , 4, () => {console.log("finish")})
 }
 
 // 決められた種類のテキストを喋らせる(kind: 種類)
 function speechText(kind) {
-    const filename = ["daijoubu", "fight", "hitoride", "komatta", "sorosoro", "TakeItEasy", "tyant", "YesWeCan"]
+    const filename = ["daijoubu", "fight", "hitoride", "komatta", "sorosoro", "TakeItEasy", "tyant", "YesWeCan", "nonoshiri", "happy", "happy2", "nemui", "ochituite"]
     const audioElem = $(".avator-voice").get(0)
     audioElem.src = `Resources/Voices/${filename[kind]}.wav`;
     console.log(audioElem.src)
     audioElem.play();
+    startMotion(kind);
+
 }
 
 // audioタグの音量レベルを取得
@@ -233,7 +286,9 @@ function speakToUser(){
         }
 
         const aveEmotion = {emotion: null, score: 0}
+
         Object.keys(expressionData).forEach((ele) => {
+            // console.log(ele)
             if (ele != "time"){
                 const checkArr = expressionData[ele].slice(-11, -1)
                 const ave = checkArr.reduce((acc, cur) => {return acc + cur}, 0)/checkArr.length
@@ -244,10 +299,11 @@ function speakToUser(){
                 }
             }
         })
+        // console.log(exAveEmotion, aveEmotion)
 
         if (aveEmotion.score > 0.7){
-            const emotionToVoiceList = {happy: [4], angry: [0, 5], sad: [1, 2, 3, 7], neutral: [], surprised: [], disgusted: []}
-            console.log(aveEmotion.emotion)
+            const emotionToVoiceList = {happy: [4,9,10], angry: [0, 5, 12], sad: [1, 2, 3, 7], neutral: [], surprised: [11], disgusted: [5, 12]}
+            // console.log(aveEmotion.emotion)
             const speakKinds = emotionToVoiceList[aveEmotion.emotion]
             if (speakKinds.length != 0){
                 const kind = speakKinds[Math.floor(Math.random() * speakKinds.length)]
@@ -255,6 +311,13 @@ function speakToUser(){
                 lastSpeakTime = Date.now()
             }
         }
+
+        // exAveEmotion.emotion = aveEmotion.emotion
+        // exAveEmotion.score = aveEmotion.score
+    } else if((Date.now() - lastSpeakTime)/1000 > 36000){
+        // 1時間以上集中していたら休憩を促す．
+        speechText(6)
+        lastSpeakTime = Date.now()
     }
 }
 
@@ -278,9 +341,9 @@ function initChart(peerId) {
     })
 
     const chart = new Chart(canvas[0], {
-        type: 'line', 
+        type: 'line',
         data: {
-            labels: expressionData.time,       
+            labels: expressionData.time,
             datasets: datasets
         },
         options: {
