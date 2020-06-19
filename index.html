@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Integrated Working System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css">
+    <script src="src/modules/Core/live2dcubismcore.min.js"></script>
+</head>
+<body>
+
+    <!-- モーダル -->
+    <div class="modal fade" width="50%" id="my-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header justify-content-around">
+              <h5 class="modal-title">IWSへようこそ</h5>
+            </div>
+            <!-- ルーム名，表示名選択フォーム -->
+            <div class="modal-body">
+                <form class="form-horizontal" id="my-form">
+                    <div class="form-group">
+                        <label>ROOM名</label>
+                        <input type="text" class="form-control" name="room" placeholder="ROOM名" required>
+                    </div>
+                    <div class="form-group">
+                        <label>表示名</label>
+                        <input type="text" class="form-control" name="name" placeholder="表示名" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary mx-auto" id="start-button">スタート</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- メイン -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 p-0 remote-infos-left">
+            </div>
+
+            <div class="col-6 d-flex justify-content-around p-0">
+                <div class="avator">
+                    <canvas class="avator-canvas"></canvas>
+                    <audio class="avator-voice"></audio>
+                </div>
+            </div>
+
+            <div class="col-3 p-0 remote-infos-right">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 送信される相手の情報(テンプレート) -->
+    <template id="remote-info-template">
+        <div class="remote-info">
+            <!-- テーブル -->
+            <table class="table table-hover table-sm m-0 mh-100 result-table">
+                    <tbody>
+                        <tr>
+                            <th>名前</th>
+                            <td id="name"></td>
+                        </tr>
+                        <tr>
+                            <th>作業</th>
+                            <td id="be"></td>
+                        </tr>
+                        <tr>
+                            <th>怒り</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="angry"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>嫌悪</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="disgusted"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>恐怖</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="fearful"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>幸福</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="happy"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>普通</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="neutral"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>悲しみ</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="sad"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>驚き</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="surprised"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+            <!-- グラフ -->
+            <canvas class="result-chart"></canvas>
+        </div>
+    </template>
+    <script src="dist/main.js"></script>
+</body>
+</html>
+
+<style>
+
+.table-sm > tbody > tr > th, td {
+    padding: 0px;
+}
+
+body {
+    background-image: url("https://virtualcast.jp/blog/wp-content/uploads/2020/04/WhiteStudio.jpg");
+    background-size: cover;
+}
+
+.remote-info{
+    width: 100%;
+    height: 50%;
+    background-color:rgba(230, 230, 230, 0.3);
+}
+
+.avator{
+    width: 100%;
+    height: 100vh;
+}
+
+.avator-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.result-table {
+    min-height: 50%;
+}
+
+.result-table td {
+    width: 80%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.result-table th {
+    text-align: center;
+}
+
+.result-chart {
+    height: 50%;
+    width: 100%;
+}
+
+
+</style>
+
