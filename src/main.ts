@@ -24,7 +24,7 @@ let lastSpeakTime = null;
 
 // ブラウザロード時の処理
 $(async () => {
-    const API_KEY = ''
+    const API_KEY = '7b6a668d-c2e9-4f78-8a25-c4ad99458d99'
     initModal()
     initFaceApi()
     await initPeer(API_KEY);
@@ -237,7 +237,7 @@ function startMotion(kind){
 
 // 決められた種類のテキストを喋らせる(kind: 種類)
 function speechText(kind) {
-    const filename = ["daijoubu", "fight", "hitoride", "komatta", "sorosoro", "TakeItEasy", "tyant", "YesWeCan", "nonoshiri", "happy", "happy2", "nemui", "ochituite"]
+    const filename = ["daijoubu", "fight", "hitoride", "komatta", "sorosoro", "TakeItEasy", "tyant", "YesWeCan", "nonoshiri", "happy", "happy2", "nemui", "ochituite", "okgoogle", "okgoogle2"]
     const audioElem = $(".avator-voice").get(0)
     audioElem.src = `Resources/Voices/${filename[kind]}.wav`;
     console.log(audioElem.src)
@@ -297,12 +297,13 @@ function speakToUser(){
                     aveEmotion.emotion = ele
                     aveEmotion.score = ave
                 }
+
             }
         })
         // console.log(exAveEmotion, aveEmotion)
 
         if (aveEmotion.score > 0.7){
-            const emotionToVoiceList = {happy: [4,9,10], angry: [0, 5, 12], sad: [1, 2, 3, 7], neutral: [], surprised: [11], disgusted: [5, 12]}
+            const emotionToVoiceList = {happy: [9,10], angry: [0, 5, 12], sad: [1, 2, 3, 7], neutral: [], surprised: [11], disgusted: [5, 12]}
             // console.log(aveEmotion.emotion)
             const speakKinds = emotionToVoiceList[aveEmotion.emotion]
             if (speakKinds.length != 0){
