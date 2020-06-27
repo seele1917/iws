@@ -252,7 +252,7 @@ function speakToUser(){
         })
 
         if (aveEmotion.score > 0.7){
-            const emotionToVoiceList = {happy: [4], angry: [0, 5], sad: [1, 2, 3, 7], neutral: [], surprised: [], disgusted: []}
+            const emotionToVoiceList = {happy: [4], angry: [0, 5], sad: [1, 2, 3, 7], neutral: [], surprised: [0], disgusted: []}
             console.log(aveEmotion.emotion)
             const speakKinds = emotionToVoiceList[aveEmotion.emotion]
             if (speakKinds.length != 0){
