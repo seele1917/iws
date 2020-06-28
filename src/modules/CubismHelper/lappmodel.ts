@@ -460,10 +460,13 @@ export class LAppModel extends CubismUserModel {
 
     if (this._motionManager.isFinished()) {
       // モーションの再生がない場合、待機モーションの中からランダムで再生する
-      // this.startRandomMotion(
-      //   LAppDefine.MotionGroupIdle,
-      //   LAppDefine.PriorityIdle
-      // );
+      setTimeout(()=>{
+        this.startRandomMotion(
+          LAppDefine.MotionGroupIdle,
+          LAppDefine.PriorityIdle
+        );
+      }, 2000)
+
     } else {
       motionUpdated = this._motionManager.updateMotion(
         this._model,
@@ -622,7 +625,6 @@ export class LAppModel extends CubismUserModel {
     const no: number = Math.floor(
       Math.random() * this._modelSetting.getMotionCount(group)
     );
-    console.log(group, no, priority)
     return this.startMotion(group, no, priority, onFinishedMotionHandler);
   }
 
